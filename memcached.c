@@ -101,6 +101,7 @@ static int start_conn_timeout_thread();
 static void stats_init(void);
 static void server_stats(ADD_STAT add_stats, conn *c);
 static void process_stat_settings(ADD_STAT add_stats, void *c);
+static void process_stat_keys(ADD_STAT add_stats, void *c);
 static void conn_to_str(const conn *c, char *buf);
 
 
@@ -3382,6 +3383,16 @@ static void process_stat_settings(ADD_STAT add_stats, void *c) {
 #endif
 }
 
+
+/*
+* Helper function to print "stats key" functionality.
+*/
+static void process_stat_keys(ADD_STAT add_stats, void *c) 
+{
+	APPEND_STAT("NO KEY FOUND", "%s", NULL);
+}
+
+
 static void conn_to_str(const conn *c, char *buf) {
     char addr_text[MAXPATHLEN];
 
@@ -3541,6 +3552,8 @@ static void process_stat(conn *c, token_t *tokens, const size_t ntokens) {
         return ;
     } else if (strcmp(subcommand, "settings") == 0) {
         process_stat_settings(&append_stats, c);
+    } else if (strncmp(subcommand, "keys", 8) == 0) {
+        process_stat_keys(&append_stats, c);
     } else if (strcmp(subcommand, "cachedump") == 0) {
         char *buf;
         unsigned int bytes, id, limit = 0;
